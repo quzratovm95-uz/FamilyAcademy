@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oila akademiyasi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        .slide-up { animation: slideUp 0.4s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* GPS Animations */
+        @keyframes ping-slow {
+            0% { transform: scale(1); opacity: 0.8; }
+            75%, 100% { transform: scale(2); opacity: 0; }
+        }
+        .animate-ping-slow { animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app"></div>
+
+    <script>
+        // --- DATA ---
+        const coursesData = [
+            {
+                id: 1, title: "Psixologiya, etika va muloqot madaniyati", iconName: "heart",
+                color: "bg-rose-100 text-rose-600",
+                image: "https://images.unsplash.com/photo-1529156069898-49953eb1b5ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Er-xotin munosabatlari, ziddiyatlarni hal qilish (mediatsiya), qaynona-kelin munosabatlari sirlari.",
+                progress: 100,
+                lessons: [
+                    { title: "Er va xotin o'rtasidagi o'zaro hurmat va ishonch", duration: "15 daqiqa", isPremium: false },
+                    { title: "Oila ichidagi nizolarni tinch yo'l bilan hal qilish", duration: "20 daqiqa", isPremium: false },
+                    { title: "Chuqurlashtirilgan: Ziddiyatlarni hal qilish (Mediatsiya)", duration: "35 daqiqa", isPremium: true },
+                    { title: "Qaynona va kelin munosabatlarining psixologiyasi", duration: "25 daqiqa", isPremium: true }
+                ]
+            },
+            {
+                id: 2, title: "Moliyaviy va huquqiy savodxonlik", iconName: "scale",
+                color: "bg-blue-100 text-blue-600",
+                image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Oila byudjetini rejalashtirish, nikoh shartnomasi, mulkiy huquqlar va majburiyatlar.",
+                progress: 75,
+                lessons: [
+                    { title: "Oila byudjetini to'g'ri rejalashtirish va jamg'arma yaratish", duration: "20 daqiqa", isPremium: false },
+                    { title: "Qarzlardan qochish va iqtisodiy mustaqillikka erishish", duration: "15 daqiqa", isPremium: false },
+                    { title: "Chuqurlashtirilgan: Nikoh shartnomasi va uning huquqiy asosi", duration: "40 daqiqa", isPremium: true },
+                    { title: "Aliment, mulkiy huquqlar va er-xotinning qonuniy majburiyatlari", duration: "25 daqiqa", isPremium: true }
+                ]
+            },
+            {
+                id: 3, title: "Tibbiy va reproduktiv salomatlik", iconName: "stethoscope",
+                color: "bg-emerald-100 text-emerald-600",
+                image: "https://images.unsplash.com/photo-1584515933487-779824d29309?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Sog'lom turmush tarzi, genetika, qarindoshlar o'rtasidagi nikoh xavfi va bola parvarishi.",
+                progress: 0,
+                lessons: [
+                    { title: "Oilada sog'lom turmush tarzini shakllantirish", duration: "15 daqiqa", isPremium: false },
+                    { title: "Chaqaloq parvarishi va birinchi yordam gigiyenasi", duration: "20 daqiqa", isPremium: false },
+                    { title: "Chuqurlashtirilgan: Genetika va qarindoshlar nikohi xavflari", duration: "35 daqiqa", isPremium: true },
+                    { title: "Homiladorlikka tayyorgarlik va reproduktiv salomatlik", duration: "30 daqiqa", isPremium: true }
+                ]
+            },
+            {
+                id: 4, title: "Ma'naviyat va qadriyatlar", iconName: "book-open",
+                color: "bg-amber-100 text-amber-600",
+                image: "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                description: "Milliy an'analar, diniy va axloqiy tarbiya asoslari, kitobning oiladagi o'rni.",
+                progress: 0,
+                lessons: [
+                    { title: "O'zbek oilasining milliy va an'anaviy qadriyatlari", duration: "20 daqiqa", isPremium: false },
+                    { title: "Bola tarbiyasida oila va jamiyatning hamkorligi", duration: "15 daqiqa", isPremium: false },
+                    { title: "Chuqurlashtirilgan: Oilada axloqiy va ruhiy tarbiya", duration: "30 daqiqa", isPremium: true },
+                    { title: "Oilaviy kitobxonlik va uning farzand kelajagidagi o'rni", duration: "20 daqiqa", isPremium: true }
+                ]
+            }
+        ];
+
+        const examQuestions = [
+            {
+                id: 1, question: "Qaynona va kelin o'rtasida tushunmovchilik kelib chiqqanda eng to'g'ri yechim nima?",
+                options: [
+                    "Darhol ota-onaga qo'ng'iroq qilib shikoyat qilish",
+                    "O'zaro hurmatni saqlagan holda ochiq va xotirjam muloqot qilish",
+                    "Bir-biri bilan umuman gaplashmay qo'yish",
+                    "Qo'shnilarga vaziyatni aytib berish"
+                ], answer: 1
+            },
+            {
+                id: 2, question: "Qarindoshlar o'rtasidagi nikohning eng katta xavfi nimada?",
+                options: [
+                    "To'y xarajatlarining ko'payib ketishida",
+                    "Oilaviy sirlarning tashqariga chiqishida",
+                    "Tug'ilajak farzandlarda genetik kasalliklar uchrash ehtimolining yuqoriligida",
+                    "Qudalar o'rtasida tez-tez janjal bo'lishida"
+                ], answer: 2
+            },
+            {
+                id: 3, question: "Oila byudjetini boshqarishda 'Xavfsizlik yostig'i' (jamg'arma) nima uchun kerak?",
+                options: [
+                    "Faqat to'y va ma'rakalar qilish uchun",
+                    "Kutilmagan favqulodda xarajatlar (kasallik, ishsizlik) yuzaga kelganda moliyaviy qiyinchilikka tushmaslik uchun",
+                    "Qo'shnilarga maqtanib yurish uchun",
+                    "Har oy yangi kiyim sotib olish uchun"
+                ], answer: 1
+            }
+        ];
+
+        // --- STATE ---
+        let state = {
+            authStage: 'app', // 'login', 'otp', 'app'
+            currentView: 'admin', // 'home', 'admin', 'gps', 'course', 'payment', 'exam', 'certificate'
+            userType: 'admin', // 'admin', 'groom', 'bride', 'public'
+            phone: '+998 90 123 45 67',
+            otp: '',
+            isPaid: false,
+            selectedCourseId: null,
+            examAnswers: {},
+            showResult: false,
+            score: 0,
+            gpsEnabled: false,
+            distance: 4.2
+        };
+
+        let gpsIntervalId = null;
+
+        // --- HELPERS ---
+        function getMyName() {
+            return state.userType === 'groom' ? 'Alisher' : state.userType === 'bride' ? 'Aziza' : 'Foydalanuvchi';
+        }
+        function getPartnerName() {
+            return state.userType === 'groom' ? 'Aziza' : state.userType === 'bride' ? 'Alisher' : '';
+        }
+        function isCouple() {
+            return state.userType === 'groom' || state.userType === 'bride';
+        }
+        function getMyProgress() { return state.userType === 'groom' ? 85 : state.userType === 'bride' ? 45 : 0; }
+        function getPartnerProgress() { return state.userType === 'groom' ? 45 : state.userType === 'bride' ? 85 : 0; }
+
+        // --- ACTIONS ---
+        window.setAuthStage = (stage) => { state.authStage = stage; render(); };
+        window.setUserType = (type) => { 
+            state.userType = type; 
+            state.currentView = (type === 'admin') ? 'admin' : 'home';
+            state.isPaid = false; 
+            render(); 
+        };
+        window.setCurrentView = (view) => { state.currentView = view; render(); };
+        window.setPhone = (val) => { state.phone = val; };
+        window.setOtp = (val) => { state.otp = val; };
+        
+        window.handleLogin = (e) => {
+            e.preventDefault();
+            if (state.phone.length > 8) { window.setAuthStage('otp'); }
+        };
+        
+        window.handleVerifyOtp = (e) => {
+            e.preventDefault();
+            window.setAuthStage('app');
+        };
+
+        window.logout = () => {
+            state.authStage = 'login';
+            state.phone = '';
+            state.otp = '';
+            state.currentView = 'home';
+            state.isPaid = false;
+            render();
+        };
+
+        window.handleCourseClick = (id) => {
+            state.selectedCourseId = id;
+            state.currentView = 'course';
+            render();
+        };
+
+        window.handleStartExam = () => {
+            if (isCouple() && !state.isPaid) {
+                state.currentView = 'payment';
+            } else {
+                state.currentView = 'exam';
+            }
+            render();
+        };
+
+        window.setExamAnswer = (qIndex, oIndex) => {
+            state.examAnswers[qIndex] = oIndex;
+            render(); // Re-render to update radio buttons state
+        };
+
+        window.handleExamSubmit = () => {
+            let correct = 0;
+            examQuestions.forEach((q, index) => {
+                if (state.examAnswers[index] === q.answer) correct++;
+            });
+            state.score = correct;
+            state.showResult = true;
+            render();
+        };
+
+        window.retryExam = () => {
+            state.showResult = false;
+            state.examAnswers = {};
+            render();
+        };
+
+        window.handlePaymentSubmit = (e) => {
+            e.preventDefault();
+            // Simulate processing
+            const btn = document.getElementById('payment-btn');
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Kuting...';
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                state.isPaid = true;
+                state.currentView = 'home';
+                alert("To'lov muvaffaqiyatli amalga oshirildi!");
+                render();
+            }, 1500);
+        };
+
+        window.toggleGps = () => {
+            state.gpsEnabled = !state.gpsEnabled;
+            render();
+        };
+
+        window.navigateHome = () => {
+            state.currentView = state.userType === 'admin' ? 'admin' : 'home';
+            state.selectedCourseId = null;
+            state.showResult = false;
+            state.examAnswers = {};
+            render();
+        };
+
+        // Handle GPS interval
+        function manageGpsInterval() {
+            if (state.currentView === 'gps' && state.gpsEnabled) {
+                if (!gpsIntervalId) {
+                    gpsIntervalId = setInterval(() => {
+                        state.distance = Math.max(0, state.distance - 0.1);
+                        // Re-render only GPS part to be efficient, but full render is fine for prototype
+                        render(); 
+                    }, 3000);
+                }
+            } else {
+                if (gpsIntervalId) {
+                    clearInterval(gpsIntervalId);
+                    gpsIntervalId = null;
+                }
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderLogin() {
+            return `
+            <div class="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 fade-in">
+                <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+                    <div class="mx-auto bg-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg mb-4">
+                        <i data-lucide="shield-check" class="w-10 h-10 text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-slate-900">Oila akademiyasi</h2>
+                    <p class="mt-2 text-sm text-slate-600">FXDYO tasdiqlagan ta'lim platformasi</p>
+                </div>
+
+                <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                    <div class="bg-white py-8 px-4 shadow-xl border border-slate-100 sm:rounded-3xl sm:px-10">
+                        ${state.authStage === 'login' ? `
+                            <form class="space-y-6" onsubmit="window.handleLogin(event)">
+                                <div class="flex bg-slate-100 p-1 rounded-xl mb-6">
+                                    <button type="button" onclick="window.setUserType('groom')" class="flex-1 text-sm font-medium py-2 rounded-lg transition-all ${isCouple() ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'}">Oila quruvchilar (FXDYO)</button>
+                                    <button type="button" onclick="window.setUserType('public')" class="flex-1 text-sm font-medium py-2 rounded-lg transition-all ${state.userType === 'public' ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'}">Erkin tinglovchi</button>
+                                </div>
+                                ${isCouple() ? `
+                                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-3 rounded-xl mb-4 flex items-start space-x-2">
+                                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                                    <p>Shaxsiy telefon raqamingiz orqali profilingizga kiring. Tizim sizni FXDYO bazasi orqali juftingiz bilan avtomatik bog'laydi.</p>
+                                </div>` : ''}
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700">Telefon raqamingiz</label>
+                                    <div class="mt-2 relative rounded-xl shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i data-lucide="smartphone" class="h-5 w-5 text-slate-400"></i>
+                                        </div>
+                                        <input type="tel" oninput="window.setPhone(this.value)" value="${state.phone}" class="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-slate-50" placeholder="+998 90 123 45 67" required />
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors">SMS kodni olish</button>
+                            </form>
+                        ` : `
+                            <form class="space-y-6 fade-in" onsubmit="window.handleVerifyOtp(event)">
+                                <div class="text-center mb-6">
+                                    <p class="text-sm text-slate-600"><span class="font-bold text-slate-900">${state.phone}</span> raqamiga yuborilgan 4 xonali kodni kiriting.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700">SMS Kod</label>
+                                    <div class="mt-2 relative rounded-xl shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i data-lucide="key-round" class="h-5 w-5 text-slate-400"></i>
+                                        </div>
+                                        <input type="text" maxlength="4" oninput="window.setOtp(this.value)" value="${state.otp}" class="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 text-center tracking-[0.5em] font-bold text-lg bg-slate-50" placeholder="••••" required />
+                                    </div>
+                                </div>
+                                <div class="flex flex-col space-y-3">
+                                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors">Tizimga kirish</button>
+                                    <button type="button" onclick="window.setAuthStage('login')" class="w-full flex justify-center py-3 px-4 border border-slate-300 rounded-xl shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors">Raqamni o'zgartirish</button>
+                                </div>
+                            </form>
+                        `}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderHeader() {
+            return `
+            <header class="bg-white border-b sticky top-0 z-20 shadow-sm">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <div class="flex items-center space-x-2 cursor-pointer" onclick="window.navigateHome()">
+                        <div class="bg-emerald-600 p-2 rounded-lg">
+                            <i data-lucide="shield-check" class="w-5 h-5 md:w-6 md:h-6 text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg md:text-xl font-bold text-slate-900 leading-tight">Oila akademiyasi</h1>
+                            <p class="text-[9px] md:text-[10px] text-slate-500 font-medium tracking-wide uppercase">
+                                ${state.userType === 'admin' ? 'Boshqaruv Paneli' : isCouple() ? "FXDYO Majburiy Dastur" : "Erkin o'rganish"}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3 md:space-x-6">
+                        <select class="bg-slate-100 border-none text-xs font-bold text-slate-600 rounded-lg focus:ring-0 cursor-pointer p-2 outline-none" onchange="window.setUserType(this.value)">
+                            <option value="admin" ${state.userType === 'admin' ? 'selected' : ''}>Admin Profil</option>
+                            <option value="groom" ${state.userType === 'groom' ? 'selected' : ''}>Kuyov Profili (Alisher)</option>
+                            <option value="bride" ${state.userType === 'bride' ? 'selected' : ''}>Kelin Profili (Aziza)</option>
+                            <option value="public" ${state.userType === 'public' ? 'selected' : ''}>Erkin Profil</option>
+                        </select>
+
+                        ${isCouple() ? `
+                        <button onclick="window.setCurrentView('gps')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${state.currentView === 'gps' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600'}">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i>
+                            <span class="hidden md:inline">Lokator</span>
+                        </button>` : ''}
+
+                        ${state.userType === 'admin' ? `
+                        <button onclick="window.setCurrentView('admin')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${state.currentView === 'admin' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-600'}">
+                            <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                            <span class="hidden md:inline">Statistika</span>
+                        </button>` : ''}
+
+                        <div class="flex items-center space-x-3 cursor-pointer group" onclick="window.logout()">
+                            <div class="hidden md:flex flex-col items-end">
+                                <span class="text-sm font-medium text-slate-900 group-hover:text-emerald-600 transition-colors">
+                                    ${state.userType === 'admin' ? 'Asosiy Administrator' : isCouple() ? getMyName() : 'Foydalanuvchi'}
+                                </span>
+                                <span class="text-xs text-emerald-600 font-medium">Chiqish</span>
+                            </div>
+                            <div class="w-9 h-9 md:w-10 md:h-10 bg-slate-100 rounded-full flex items-center justify-center border-2 border-emerald-500 overflow-hidden">
+                                <i data-lucide="user" class="w-5 h-5 text-slate-500 group-hover:text-emerald-600 transition-colors"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>`;
+        }
+
+        function renderAdminDashboard() {
+            return `
+            <div class="space-y-6 slide-up">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-2xl font-bold text-slate-900">Platforma Statistikasi</h2>
+                    <button class="flex items-center space-x-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl font-medium hover:bg-emerald-100 transition-colors">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span>Sozlamalar</span>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-slate-500 text-sm font-medium">Jami o'quvchilar</p>
+                        <h3 class="text-3xl font-bold text-slate-900 mt-1">12,450</h3>
+                        <p class="text-emerald-500 text-xs font-bold mt-2">+124 bugun</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center mb-4">
+                            <i data-lucide="heart" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-slate-500 text-sm font-medium">Oila qurayotgan juftliklar</p>
+                        <h3 class="text-3xl font-bold text-slate-900 mt-1">5,820</h3>
+                        <p class="text-emerald-500 text-xs font-bold mt-2">+45 bugun</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-4">
+                            <i data-lucide="award" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-slate-500 text-sm font-medium">Berilgan sertifikatlar</p>
+                        <h3 class="text-3xl font-bold text-slate-900 mt-1">4,112</h3>
+                        <p class="text-emerald-500 text-xs font-bold mt-2">+12 bugun</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-4">
+                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-slate-500 text-sm font-medium">O'rtacha o'zlashtirish</p>
+                        <h3 class="text-3xl font-bold text-slate-900 mt-1">87%</h3>
+                        <p class="text-emerald-500 text-xs font-bold mt-2">Yaxshi ko'rsatkich</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-8">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-slate-900">Kurslarni boshqarish</h3>
+                        <button onclick="window.setCurrentView('home')" class="text-sm text-emerald-600 font-medium hover:underline">
+                            Kurslarni o'quvchi sifatida ko'rish
+                        </button>
+                    </div>
+                    <div class="divide-y divide-slate-100">
+                        ${coursesData.map(course => `
+                            <div class="p-4 px-6 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <div class="p-2 rounded-lg ${course.color}">
+                                        <i data-lucide="${course.iconName}" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-slate-800">${course.title}</h4>
+                                        <p class="text-xs text-slate-500">${course.lessons.length} ta dars • ${Math.floor(Math.random() * 5000) + 1000} o'quvchi</p>
+                                    </div>
+                                </div>
+                                <button class="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Tahrirlash</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderHome() {
+            let html = '<div class="space-y-8 slide-up">';
+            
+            // Payment Banner
+            if (!state.isPaid && state.userType !== 'admin') {
+                html += `
+                <div class="rounded-2xl p-6 border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 ${isCouple() ? 'bg-amber-50 border-amber-200' : 'bg-indigo-50 border-indigo-200'}">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 rounded-xl ${isCouple() ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-600'}">
+                            <i data-lucide="${isCouple() ? 'shield-check' : 'zap'}" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold ${isCouple() ? 'text-amber-900' : 'text-indigo-900'}">
+                                ${isCouple() ? "Majburiy to'lovni amalga oshiring" : "Premium ta'rifga o'ting"}
+                            </h3>
+                            <p class="text-sm mt-1 max-w-xl ${isCouple() ? 'text-amber-800' : 'text-indigo-800'}">
+                                ${isCouple() ? "FXDYO qoshidagi oila quruvchilar uchun imtihon topshirish, sertifikat olish va barcha chuqurlashtirilgan kurslarni ko'rish uchun belgilangan to'lovni amalga oshirish zarur." : "Sertifikatni yuklab olish hamda barcha yopiq va chuqurlashtirilgan mavzularni ochish uchun Premium ta'rifini xarid qiling."}
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="window.setCurrentView('payment')" class="whitespace-nowrap px-6 py-3 rounded-xl font-bold text-white shadow-md transition-all ${isCouple() ? 'bg-amber-500 hover:bg-amber-600' : 'bg-indigo-600 hover:bg-indigo-700'}">
+                        To'lov qilish
+                    </button>
+                </div>`;
+            }
+
+            // Couple Progress
+            if (isCouple()) {
+                html += `
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative overflow-hidden">
+                    ${!state.isPaid ? `
+                    <div class="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                        <span class="bg-white px-4 py-1.5 rounded-full shadow-sm text-sm font-bold text-slate-500 border border-slate-200">
+                            To'lovdan so'ng faollashadi
+                        </span>
+                    </div>` : ''}
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 opacity-80">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="heart" class="w-5 h-5 text-rose-500" fill="currentColor"></i> Juftlik Taraqqiyoti
+                            </h3>
+                            <p class="text-sm text-slate-500 mt-1">Sertifikat olish uchun har ikkala shaxs 100% o'zlashtirishi shart.</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-6 md:min-w-[400px]">
+                            <div class="flex-1">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-semibold text-emerald-700">Mening natijam</span>
+                                    <span class="text-slate-600 font-medium">${getMyProgress()}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-emerald-500 h-full rounded-full" style="width: ${getMyProgress()}%"></div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-semibold text-indigo-700">Juftim (${getPartnerName()})</span>
+                                    <span class="text-slate-600 font-medium">${getPartnerProgress()}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-indigo-400 h-full rounded-full" style="width: ${getPartnerProgress()}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            // Welcome Banner
+            html += `
+            <div class="bg-emerald-700 rounded-2xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 opacity-20">
+                    <i data-lucide="heart" class="w-64 h-64"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    ${isCouple() ? `
+                    <div class="inline-flex items-center space-x-2 bg-rose-500/80 rounded-full px-3 py-1 text-sm font-medium mb-4 backdrop-blur-sm border border-rose-400">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-white"></i>
+                        <span>Majburiy tartib</span>
+                    </div>` : ''}
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Oilaviy hayotga tayyormisiz?</h2>
+                    <p class="text-emerald-100 text-lg mb-6 line-clamp-2 md:line-clamp-none">
+                        Baxtli va mustahkam oila qurishning huquqiy, tibbiy va psixologik sirlarini o'rganing. 
+                        Barcha kurslarni yakunlab, FXDYO tomonidan rasman e'tirof etilgan sertifikatni qo'lga kiriting.
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1 bg-emerald-800/50 rounded-full h-3 max-w-xs overflow-hidden border border-emerald-600/50">
+                            <div class="bg-emerald-300 h-full rounded-full" style="width: ${state.isPaid ? '65%' : '15%'}"></div>
+                        </div>
+                        <span class="text-sm font-medium text-emerald-200">Sizning natijangiz: ${state.isPaid ? '65%' : '15%'}</span>
+                    </div>
+                </div>
+            </div>`;
+
+            // Courses
+            html += `
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-slate-900">O'quv Dasturlari</h3>
+                    <span class="text-sm font-medium text-slate-500">Jami 4 ta modul</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    ${coursesData.map(course => `
+                        <div onclick="window.handleCourseClick(${course.id})" class="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col relative overflow-hidden">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-3 rounded-xl ${course.color} transition-colors relative z-10">
+                                    <i data-lucide="${course.iconName}" class="w-7 h-7"></i>
+                                </div>
+                                ${state.isPaid && course.progress === 100 ? `
+                                <div class="flex items-center space-x-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md text-xs font-bold relative z-10">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                    <span>Tugallangan</span>
+                                </div>` : ''}
+                            </div>
+                            <h4 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors relative z-10">${course.title}</h4>
+                            <p class="text-slate-600 text-sm mb-6 flex-grow relative z-10">${course.description}</p>
+                            <div class="mt-auto relative z-10">
+                                <div class="flex justify-between text-xs text-slate-500 mb-2 font-medium">
+                                    <span>Progress</span>
+                                    <span>${state.isPaid ? course.progress : 15}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                    <div class="h-full rounded-full ${state.isPaid && course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}" style="width: ${state.isPaid ? course.progress : 15}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+
+            // Exam Banner
+            html += `
+            <div class="mt-12">
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 md:p-8 text-white flex flex-col md:flex-row items-center justify-between shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+                    <div class="flex items-center space-x-6 mb-6 md:mb-0 relative z-10">
+                        <div class="bg-white/10 p-4 rounded-full backdrop-blur-md">
+                            <i data-lucide="award" class="w-10 h-10 text-amber-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white mb-1">Yakuniy Imtihon</h3>
+                            <p class="text-slate-300 text-sm max-w-md">Barcha modullarni muvaffaqiyatli yakunlaganingizdan so'ng, FXDYO tomonidan tasdiqlangan maxsus sertifikatni olish uchun test topshiring.</p>
+                        </div>
+                    </div>
+                    <button onclick="window.handleStartExam()" class="w-full md:w-auto px-8 py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-xl transition-all shadow-lg hover:shadow-amber-500/30 flex items-center justify-center space-x-2 relative z-10 group">
+                        ${isCouple() && !state.isPaid ? `
+                            <i data-lucide="lock" class="w-5 h-5 text-slate-700"></i>
+                            <span>To'lov talab etiladi</span>
+                        ` : `
+                            <span>Testni Boshlash</span>
+                            <i data-lucide="chevron-right" class="w-5 h-5 transform group-hover:translate-x-1 transition-transform"></i>
+                        `}
+                    </button>
+                </div>
+            </div>`;
+
+            html += '</div>';
+            return html;
+        }
+
+        function renderCourse() {
+            const course = coursesData.find(c => c.id === state.selectedCourseId);
+            return `
+            <div class="slide-up">
+                <button onclick="window.navigateHome()" class="flex items-center space-x-2 text-slate-500 hover:text-emerald-600 mb-6 font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Orqaga qaytish</span>
+                </button>
+                
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="h-64 md:h-80 w-full relative">
+                        <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-end p-8">
+                            <div class="w-max p-2 rounded-lg ${course.color} mb-4 bg-white/90 backdrop-blur-sm">
+                                <i data-lucide="${course.iconName}" class="w-6 h-6"></i>
+                            </div>
+                            <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">${course.title}</h2>
+                            <p class="text-slate-200 max-w-2xl">${course.description}</p>
+                        </div>
+                    </div>
+
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6 pb-6 border-b border-slate-100">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900">Darslar ro'yxati</h3>
+                                <p class="text-slate-500 text-sm mt-1">${course.lessons.length} ta mavzu</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm font-medium text-slate-500 block mb-1">O'zlashtirish</span>
+                                <span class="text-2xl font-bold text-emerald-600">${state.isPaid ? course.progress : 15}%</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            ${course.lessons.map((lesson, idx) => {
+                                const isLocked = lesson.isPremium && !state.isPaid;
+                                return `
+                                <div onclick="${isLocked ? "window.setCurrentView('payment')" : "null"}" class="group flex items-center justify-between p-4 rounded-xl border transition-all ${isLocked ? 'border-slate-100 bg-slate-50 opacity-70 cursor-pointer hover:border-indigo-300' : 'border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 cursor-pointer'}">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${isLocked ? 'bg-slate-200 text-slate-400' : 'bg-slate-100 group-hover:bg-emerald-100 text-slate-500 group-hover:text-emerald-600'}">
+                                            ${idx + 1}
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <h4 class="font-semibold transition-colors ${isLocked ? 'text-slate-600' : 'text-slate-800 group-hover:text-emerald-700'}">
+                                                    ${lesson.title}
+                                                </h4>
+                                                ${lesson.isPremium ? `<span class="text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wider ${state.isPaid ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'}">Premium</span>` : ''}
+                                            </div>
+                                            <div class="flex items-center space-x-2 text-xs text-slate-500 mt-1">
+                                                <i data-lucide="play-circle" class="w-3 h-3"></i>
+                                                <span>${lesson.duration}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="p-2 transition-colors ${isLocked ? 'text-slate-400 group-hover:text-indigo-500' : 'text-slate-400 group-hover:text-emerald-600'}">
+                                        <i data-lucide="${isLocked ? 'lock' : 'play-circle'}" class="w-6 h-6 md:w-8 md:h-8"></i>
+                                    </button>
+                                </div>
+                                `
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderExam() {
+            if (state.showResult) {
+                return `
+                <div class="max-w-3xl mx-auto slide-up">
+                    <button onclick="window.navigateHome()" class="flex items-center space-x-2 text-slate-500 hover:text-emerald-600 mb-6 font-medium transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Bosh sahifaga qaytish</span>
+                    </button>
+                    <div class="bg-white rounded-3xl shadow-lg border border-slate-200 p-8 text-center">
+                        ${state.score === examQuestions.length ? `
+                            <div class="space-y-6">
+                                <div class="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i data-lucide="award" class="w-12 h-12"></i>
+                                </div>
+                                <h2 class="text-3xl font-bold text-slate-900">Tabriklaymiz!</h2>
+                                ${state.isPaid ? `
+                                    <p class="text-slate-600 max-w-md mx-auto">
+                                        Siz imtihondan muvaffaqiyatli o'tdingiz. 
+                                        ${isCouple() && getPartnerProgress() < 100 ? ` Ammo sherigingiz (${getPartnerName()}) kursni to'liq tugatmaguncha rasmiy sertifikat taqdim etilmaydi (Vaqtincha namuna ko'rishingiz mumkin).` : " Sizning sertifikatingiz tayyor."}
+                                    </p>
+                                    <div class="pt-4">
+                                        <button onclick="window.setCurrentView('certificate')" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-md inline-flex items-center space-x-2">
+                                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                                            <span>Sertifikatni Ko'rish</span>
+                                        </button>
+                                    </div>
+                                ` : `
+                                    <p class="text-slate-600 max-w-md mx-auto">
+                                        Siz testdan 100% o'tdingiz! Rasmiy sertifikatni yuklab olish va kelajakdagi chuqurlashtirilgan o'quv materiallariga kirish uchun <strong class="text-indigo-600">Premium ta'rifini</strong> faollashtiring.
+                                    </p>
+                                    <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                                        <button onclick="window.setCurrentView('payment')" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-md inline-flex items-center space-x-2 w-full sm:w-auto">
+                                            <i data-lucide="zap" class="w-5 h-5"></i>
+                                            <span>Premium Sotib Olish</span>
+                                        </button>
+                                        <button onclick="window.navigateHome()" class="px-8 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all w-full sm:w-auto">
+                                            Keyinroq
+                                        </button>
+                                    </div>
+                                `}
+                            </div>
+                        ` : `
+                            <div class="space-y-6">
+                                <div class="w-24 h-24 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i data-lucide="alert-circle" class="w-12 h-12"></i>
+                                </div>
+                                <h2 class="text-3xl font-bold text-slate-900">Afsuski, yetarli ball to'plamadingiz</h2>
+                                <p class="text-slate-600 max-w-md mx-auto">
+                                    Siz ${examQuestions.length} ta savoldan ${state.score} tasiga to'g'ri javob berdingiz. Muvaffaqiyatli o'tish uchun barcha savollarga to'g'ri javob berishingiz kerak.
+                                </p>
+                                <div class="pt-4 space-x-4">
+                                    <button onclick="window.retryExam()" class="px-8 py-3 border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-all inline-flex items-center">
+                                        Qayta urinish
+                                    </button>
+                                </div>
+                            </div>
+                        `}
+                    </div>
+                </div>`;
+            }
+
+            const allAnswered = Object.keys(state.examAnswers).length === examQuestions.length;
+
+            return `
+            <div class="max-w-3xl mx-auto slide-up">
+                <button onclick="window.navigateHome()" class="flex items-center space-x-2 text-slate-500 hover:text-emerald-600 mb-6 font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Bosh sahifaga qaytish</span>
+                </button>
+
+                <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+                    <div class="bg-emerald-600 p-8 text-white text-center">
+                        <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-4 opacity-80"></i>
+                        <h2 class="text-3xl font-bold mb-2">Yakuniy Imtihon</h2>
+                        <p class="text-emerald-100">Barcha savollarga to'g'ri javob bering va bilimingizni sinang.</p>
+                    </div>
+                    
+                    <div class="p-8">
+                        ${isCouple() && getPartnerProgress() < 100 ? `
+                        <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl mb-6 text-sm flex items-start gap-3">
+                            <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <span class="font-bold">Eslatma!</span> Sertifikat berilishi uchun juftligingiz <strong>${getPartnerName()}</strong> ham ushbu imtihondan 100% o'tishi kerak. Hozirda uning natijasi ${getPartnerProgress()}%.
+                            </div>
+                        </div>` : ''}
+
+                        <div class="space-y-10">
+                            ${examQuestions.map((q, qIndex) => `
+                                <div class="space-y-4">
+                                    <h3 class="text-lg font-bold text-slate-900 flex items-start space-x-3">
+                                        <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-sm min-w-[2rem] text-center">${qIndex + 1}</span>
+                                        <span>${q.question}</span>
+                                    </h3>
+                                    <div class="space-y-3 pl-11">
+                                        ${q.options.map((option, oIndex) => {
+                                            const isSelected = state.examAnswers[qIndex] === oIndex;
+                                            return `
+                                            <label class="flex items-start space-x-3 p-4 rounded-xl border cursor-pointer transition-all ${isSelected ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}">
+                                                <input type="radio" name="question-${qIndex}" onchange="window.setExamAnswer(${qIndex}, ${oIndex})" class="mt-1 w-4 h-4 text-emerald-600 border-gray-300 focus:ring-emerald-500" ${isSelected ? 'checked' : ''} />
+                                                <span class="text-sm md:text-base ${isSelected ? 'text-emerald-900 font-medium' : 'text-slate-700'}">${option}</span>
+                                            </label>`
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="mt-10 pt-6 border-t border-slate-100 flex justify-end">
+                            <button onclick="window.handleExamSubmit()" ${!allAnswered ? 'disabled' : ''} class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-md flex items-center space-x-2">
+                                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                                <span>Natijani ko'rish</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderPayment() {
+            return `
+            <div class="max-w-xl mx-auto slide-up">
+                <button onclick="window.navigateHome()" class="flex items-center space-x-2 text-slate-500 hover:text-emerald-600 mb-6 font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Orqaga qaytish</span>
+                </button>
+                
+                <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                    <div class="p-8 text-center text-white ${isCouple() ? 'bg-amber-500' : 'bg-indigo-600'}">
+                        <i data-lucide="credit-card" class="w-12 h-12 mx-auto mb-4 opacity-90"></i>
+                        <h2 class="text-2xl font-bold mb-2">
+                            ${isCouple() ? "Oila Akademiyasi: Majburiy To'lov" : "Premium Ta'rif"}
+                        </h2>
+                        <p class="opacity-90 max-w-sm mx-auto text-sm">
+                            ${isCouple() ? "Sertifikatni olish, imtihondan o'tish va to'liq bazani ochish uchun davlat bojini to'lang." : "Sertifikat va barcha chuqurlashtirilgan maxfiy darslarga ruxsat olish uchun to'lov qiling."}
+                        </p>
+                        <div class="mt-6 text-4xl font-black">
+                            ${isCouple() ? "150 000" : "99 000"} <span class="text-lg font-medium opacity-80 uppercase">UZS</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8">
+                        <form onsubmit="window.handlePaymentSubmit(event)" class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Karta raqami</label>
+                                <input type="text" placeholder="8600 1234 5678 9012" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50 outline-none transition-all tracking-widest" required />
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Amal qilish muddati</label>
+                                    <input type="text" placeholder="MM/YY" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50 outline-none transition-all text-center" required />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Karta egasi</label>
+                                    <input type="text" placeholder="ISMI SHARIFI" class="w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-slate-50 outline-none transition-all uppercase" required />
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4">
+                                <button type="submit" id="payment-btn" class="w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg flex justify-center items-center gap-2 transition-transform hover:scale-[1.02] active:scale-[0.98] ${isCouple() ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-500/30' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30'}">
+                                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                                    To'lovni tasdiqlash
+                                </button>
+                            </div>
+                            <p class="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">
+                                <i data-lucide="shield-check" class="w-3 h-3"></i> To'lovlar xavfsiz himoyalangan
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderGps() {
+            return `
+            <div class="max-w-4xl mx-auto slide-up">
+                <button onclick="window.navigateHome()" class="flex items-center space-x-2 text-slate-500 hover:text-indigo-600 mb-6 font-medium transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span>Bosh sahifaga qaytish</span>
+                </button>
+
+                <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+                    <div class="bg-indigo-600 p-8 text-white text-center relative overflow-hidden">
+                        <i data-lucide="map" class="w-16 h-16 mx-auto mb-4 opacity-20 absolute -left-4 -bottom-4 transform -rotate-12 scale-150"></i>
+                        <div class="relative z-10">
+                            <i data-lucide="navigation" class="w-10 h-10 mx-auto mb-3"></i>
+                            <h2 class="text-3xl font-bold mb-2">Juftlik Lokatori</h2>
+                            <p class="text-indigo-200 max-w-lg mx-auto text-sm">
+                                Bu xizmat orqali bo'lajak turmush o'rtog'ingiz (${getPartnerName()}) qayerda ekanligini ko'rishingiz mumkin.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200 mb-8 gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded-full ${state.gpsEnabled ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-200 text-slate-500'}">
+                                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">Lokatsiyani ulashish</h4>
+                                    <p class="text-xs text-slate-500">Juflingiz sizning joylashuvingizni ko'ra oladi</p>
+                                </div>
+                            </div>
+                            <button onclick="window.toggleGps()" type="button" class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${state.gpsEnabled ? 'bg-indigo-600' : 'bg-slate-300'}">
+                                <span class="inline-block h-6 w-6 transform rounded-full bg-white transition duration-200 ease-in-out ${state.gpsEnabled ? 'translate-x-7' : 'translate-x-1'}"></span>
+                            </button>
+                        </div>
+
+                        <div class="bg-slate-100 rounded-3xl h-80 relative flex items-center justify-center overflow-hidden border border-slate-200">
+                            ${!state.gpsEnabled ? `
+                                <div class="text-center z-10 px-4">
+                                    <i data-lucide="radar" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
+                                    <p class="text-slate-500 font-medium">Xizmat faol emas. Lokatsiyani ulashishni yoqing.</p>
+                                </div>
+                            ` : `
+                                <div class="absolute inset-0 z-0" style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5;"></div>
+                                <div class="absolute w-[400px] h-[400px] rounded-full border border-indigo-200/50 flex items-center justify-center">
+                                    <div class="absolute w-[300px] h-[300px] rounded-full border border-indigo-300/50"></div>
+                                    <div class="absolute w-[200px] h-[200px] rounded-full border border-indigo-400/50 bg-indigo-50/20"></div>
+                                    <div class="absolute w-[100px] h-[100px] rounded-full border-2 border-indigo-500/50 bg-indigo-100/50 animate-ping-slow opacity-20"></div>
+                                </div>
+
+                                <div class="absolute z-10 flex flex-col items-center group">
+                                    <div class="bg-blue-600 text-white p-2 rounded-full shadow-lg relative z-10 border-2 border-white">
+                                        <i data-lucide="user" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="mt-1 bg-white px-2 py-0.5 rounded text-[10px] font-bold shadow-sm border border-slate-100 text-slate-700">Men (${getMyName()})</div>
+                                </div>
+
+                                <div class="absolute z-10 flex flex-col items-center transition-all duration-1000 ease-in-out" style="transform: translate(${state.distance * 20}px, -${state.distance * 15}px)">
+                                    <div class="bg-rose-500 text-white p-2 rounded-full shadow-lg relative z-10 border-2 border-white animate-bounce">
+                                        <i data-lucide="heart" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="mt-1 bg-white px-2 py-0.5 rounded text-[10px] font-bold shadow-sm border border-slate-100 text-slate-700">${getPartnerName()}</div>
+                                </div>
+
+                                <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-lg border border-indigo-100 flex items-center justify-between z-20">
+                                    <div>
+                                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Hozirgi Masofa</p>
+                                        <p class="text-2xl font-black text-indigo-700 font-mono">${state.distance.toFixed(1)} km</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="flex items-center space-x-1 justify-end text-emerald-600">
+                                            <span class="relative flex h-3 w-3">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                                            </span>
+                                            <span class="text-xs font-bold uppercase">Jonli Kuzatuv</span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 mt-1">${state.distance < 1 ? 'Juda yaqin!' : 'Yaqinlashmoqda...'}</p>
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderCertificate() {
+            const pending = isCouple() && state.score === examQuestions.length && getPartnerProgress() < 100;
+            return `
+            <div class="max-w-4xl mx-auto slide-up">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="window.navigateHome()" class="flex items-center space-x-2 text-slate-500 hover:text-emerald-600 font-medium transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Bosh sahifaga</span>
+                    </button>
+                    <button class="flex items-center space-x-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>PDF yuklab olish</span>
+                    </button>
+                </div>
+
+                <div class="bg-white p-2 md:p-4 rounded shadow-2xl border border-slate-200 relative">
+                    ${pending ? `
+                    <div class="absolute inset-0 z-50 bg-white/60 backdrop-blur-[2px] flex items-center justify-center rounded">
+                        <div class="bg-amber-100 text-amber-900 px-6 py-4 rounded-xl font-bold border-2 border-amber-300 transform -rotate-12 text-xl shadow-xl flex items-center gap-2">
+                            <i data-lucide="lock" class="w-6 h-6"></i> KUTILMOQDA (Juftingiz tugatmagan)
+                        </div>
+                    </div>` : ''}
+                    
+                    <div class="border-[12px] border-emerald-800 p-8 md:p-16 relative bg-[#faf9f6] text-center bg-opacity-90 overflow-hidden">
+                        <div class="absolute inset-0 opacity-[0.03] flex items-center justify-center pointer-events-none">
+                            <i data-lucide="award" class="w-[500px] h-[500px]"></i>
+                        </div>
+                        
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div class="flex items-center justify-center space-x-4 mb-8">
+                                <i data-lucide="shield-check" class="w-16 h-16 text-emerald-700"></i>
+                                <div class="text-left border-l-2 border-emerald-700 pl-4">
+                                    <p class="text-xs md:text-sm font-bold text-slate-800 uppercase tracking-widest">O'zbekiston Respublikasi</p>
+                                    <p class="text-[10px] md:text-xs text-slate-600 font-medium uppercase tracking-wider">Adliya Vazirligi huzuridagi FXDYO</p>
+                                </div>
+                            </div>
+
+                            <h1 class="text-4xl md:text-6xl font-serif text-emerald-900 mb-2 font-bold tracking-wider">SERTIFIKAT</h1>
+                            <p class="text-slate-500 uppercase tracking-widest text-sm mb-12 border-b-2 border-emerald-200 pb-4 w-64 text-center">Nº MO-2026-08942</p>
+
+                            <p class="text-lg md:text-xl text-slate-700 mb-4 font-serif">Ushbu sertifikat tasdiqlaydiki,</p>
+                            
+                            <h2 class="text-3xl md:text-5xl font-bold text-slate-900 mb-4 border-b-2 border-slate-300 pb-2 px-12 inline-block font-serif">
+                                ${state.userType === 'bride' ? 'Azizova Aziza' : state.userType === 'groom' ? 'Alisherov Alisher' : 'Foydalanuvchi ishi-sharifi'}
+                            </h2>
+                            ${(isCouple() || state.userType === 'admin') ? `
+                            <h2 class="text-3xl md:text-5xl font-bold text-slate-900 mb-8 border-b-2 border-slate-300 pb-2 px-12 inline-block font-serif">
+                                ${state.userType === 'bride' ? 'Alisherov Alisher' : 'Azizova Aziza'}
+                            </h2>` : ''}
+
+                            <p class="text-lg md:text-xl text-slate-700 max-w-2xl mx-auto leading-relaxed mb-16 font-serif">
+                                FXDYO organlari qoshidagi <strong>"Oila akademiyasi"</strong> o'quv dasturi doirasida psixologiya, huquq, tibbiyot va ma'naviyat bo'yicha oilaviy munosabatlarga tayyorlash maxsus kursini muvaffaqiyatli tamomlaganliklarini tasdiqlaydi.
+                            </p>
+
+                            <div class="w-full flex justify-between items-end px-4 md:px-16 mt-auto">
+                                <div class="text-center">
+                                    <div class="w-32 md:w-48 h-px bg-slate-800 mb-2"></div>
+                                    <p class="text-sm font-bold text-slate-800">Direktor</p>
+                                    <p class="text-xs text-slate-500">FXDYO Markaziy Bo'limi</p>
+                                </div>
+                                <div class="w-24 h-24 border-4 border-emerald-800 rounded-full flex items-center justify-center opacity-80 transform -rotate-12">
+                                    <span class="text-emerald-800 font-bold text-xs uppercase text-center leading-tight">Rasmiy<br/>Muhr</span>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-serif mb-1">${new Date().toLocaleDateString('uz-UZ')}</div>
+                                    <div class="w-32 md:w-48 h-px bg-slate-800 mb-2"></div>
+                                    <p class="text-sm font-bold text-slate-800">Sana</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // --- MAIN RENDER ---
+        function render() {
+            const app = document.getElementById('app');
+            manageGpsInterval();
+
+            if (state.authStage === 'login' || state.authStage === 'otp') {
+                app.innerHTML = renderLogin();
+            } else {
+                let mainContent = '';
+                switch (state.currentView) {
+                    case 'admin': mainContent = renderAdminDashboard(); break;
+                    case 'home': mainContent = renderHome(); break;
+                    case 'course': mainContent = renderCourse(); break;
+                    case 'exam': mainContent = renderExam(); break;
+                    case 'payment': mainContent = renderPayment(); break;
+                    case 'gps': mainContent = renderGps(); break;
+                    case 'certificate': mainContent = renderCertificate(); break;
+                    default: mainContent = renderHome(); break;
+                }
+
+                app.innerHTML = `
+                    ${renderHeader()}
+                    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        ${mainContent}
+                    </main>
+                `;
+            }
+
+            // Create Icons after rendering HTML
+            lucide.createIcons();
+        }
+
+        // Initial Render
+        render();
+
+    </script>
+</body>
+</html>
